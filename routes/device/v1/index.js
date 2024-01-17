@@ -5,6 +5,7 @@
 const express =  require('express');
 const router =  express.Router();
 router.use('/device/auth',require('./auth'));
+router.use(require('./CustomerRoutes'));
 router.use(require('./userRoutes'));
 router.use(require('./bannerRoutes'));
 router.use(require('./imageRoutes'));
@@ -22,6 +23,5 @@ router.use(require('./shippingRoutes'));
 router.use(require('./addressRoutes'));
 router.use(require('./walletRoutes'));
 router.use(require('./walletTransactionRoutes'));
-router.use(require('./uploadRoutes'));
 
 module.exports = router;

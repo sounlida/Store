@@ -5,6 +5,7 @@
 const express =  require('express');
 const router =  express.Router();
 router.use('/admin/auth',require('./auth'));
+router.use(require('./CustomerRoutes'));
 router.use(require('./userRoutes'));
 router.use(require('./bannerRoutes'));
 router.use(require('./imageRoutes'));

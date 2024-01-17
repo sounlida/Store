@@ -26,7 +26,8 @@ let User = sequelize.define('user',{
   updatedBy:{ type:DataTypes.INTEGER },
   userType:{ type:DataTypes.INTEGER },
   mobileNo:{ type:DataTypes.STRING },
-  isDeleted:{ type:DataTypes.BOOLEAN }
+  isDeleted:{ type:DataTypes.BOOLEAN },
+  githubId:{ type:DataTypes.STRING }
 }
 ,{
   hooks:{

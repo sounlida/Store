@@ -5,6 +5,7 @@
  */
 
 const express = require('express');
+const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
 const dotenv = require('dotenv');
@@ -25,6 +26,7 @@ let logger = require('morgan');
 const { adminPassportStrategy } = require('./config/adminPassportStrategy');
 const { devicePassportStrategy } = require('./config/devicePassportStrategy');
 const { clientPassportStrategy } = require('./config/clientPassportStrategy');
+const { githubPassportStrategy } = require('./config/githubPassportStrategy');
 
 const app = express();
 app.use(require('./utils/response/responseHandler'));
@@ -40,11 +42,18 @@ app.set('views', path.join(__dirname, 'views'));
 adminPassportStrategy(passport);
 devicePassportStrategy(passport);
 clientPassportStrategy(passport);
+githubPassportStrategy(passport);
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
+app.use(session({
+  secret:'my-secret',
+  resave:true,
+  saveUninitialized:false
+}));
 
 app.use(require('./middleware/activityLog').addActivityLog);
 app.get('/', (req, res) => {

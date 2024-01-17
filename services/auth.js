@@ -354,11 +354,73 @@ const sendPasswordByEmail = async (user) => {
   }
 };
 
+/**
+ * @description :  Social Login.
+ * @param {string} email : email of user.
+ * @param {platform} platform : platform that user wants to access.
+ * @return {boolean}  : returns status whether SMS is sent or not.
+ */
+const socialLogin = async (email,platform) => {
+  try {
+    const user = await dbService.findOne(model.user,{ email });
+    if (user && user.email) {
+      const { ...userData } = user.toJSON();
+      if (!user.userType) {
+        return {
+          flag:true,
+          data:'You have not been assigned any role'
+        };
+      }
+      if (platform === undefined){
+        return {
+          flag:true,
+          data:'Please login through Platform'
+        };
+      }
+      if (!PLATFORM[platform.toUpperCase()] || !JWT[`${platform.toUpperCase()}_SECRET`]){
+        return {
+          flag: true,
+          data: 'Platform not exists'
+        };
+      }
+      if (!LOGIN_ACCESS[user.userType].includes(PLATFORM[platform.toUpperCase()])) {
+        return {
+          flag: true,
+          data: 'you are unable to access this platform'
+        };
+      }
+      let token = await generateToken(userData, JWT[`${platform.toUpperCase()}_SECRET`]);
+      let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
+      await dbService.createOne(model.userTokens,{
+        userId: user.id,
+        token: token,
+        tokenExpiredTime: expire 
+      });
+      const userToReturn = {
+        ...userData,
+        token 
+      };
+      return {
+        flag:false,
+        data:userToReturn
+      };
+    }
+    else {
+      return {
+        flag:true,
+        data:'User/Email not exists'
+      };
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 module.exports = {
   loginUser,
   changePassword,
   sendResetPasswordNotification,
   resetPassword,
   sendPasswordBySMS,
-  sendPasswordByEmail
+  sendPasswordByEmail,
+  socialLogin
 };

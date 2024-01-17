@@ -1,21 +1,17 @@
-/** 
- * emailService.js
- * @description :: exports function used in sending mails using mailgun provider
- */
-
 const nodemailer = require('nodemailer');
 const ejs = require('ejs');
 
-let transporter = nodemailer.createTransport({
-  service: 'Mailgun',
+const transporter = nodemailer.createTransport({
+  host: process.env.SENDGRID_SMTP,
+  port: process.env.SENDGRID_PORT,
+  secure: true,
   auth: {
-    user: process.env.MAILGUN_USER,
-    pass: process.env.MAILGUN_PASSWORD
+    user: process.env.SENDGRID_USER,
+    pass: process.env.SENDGRID_PASSWORD
   }
 });
 
 const sendMail =  async (obj) => {
-    
   if (!Array.isArray(obj.to)) {
     obj.to = [obj.to];
   }
